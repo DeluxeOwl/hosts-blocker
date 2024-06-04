@@ -1,0 +1,61 @@
+#!/bin/bash
+
+HOSTS_FILE="/etc/hosts"
+IP="127.0.0.1"
+DOMAINS=(
+    "x.com"
+    "twitter.com"
+    "www.twitter.com"
+    "www.x.com"
+    "instagram.com"
+    "www.instagram.com"
+    "news.ycombinator.com"
+    "layers.to"
+    "www.midjourney.com"
+    "nytimes.com"
+    "youtube.com"
+    "www.youtube.com"
+    "twitch.tv"
+    "www.twitch.tv"
+    "www.facebook.com"
+    "facebook.com"
+)
+
+backup_hosts_file() {
+    sudo cp $HOSTS_FILE "$HOSTS_FILE.bak"
+}
+
+add_entries() {
+    for domain in "${DOMAINS[@]}"; do
+        entry="$IP $domain"
+        if ! grep -q "$entry" $HOSTS_FILE; then
+            echo "$entry" | sudo tee -a $HOSTS_FILE > /dev/null
+        fi
+    done
+}
+
+remove_entries() {
+    for domain in "${DOMAINS[@]}"; do
+        entry="$IP $domain"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS (BSD sed)
+            sudo sed -i '' "/$entry/d" $HOSTS_FILE
+        else
+            # Linux (GNU sed)
+            sudo sed -i "/$entry/d" $HOSTS_FILE
+        fi
+    done
+}
+
+if [[ $1 == "on" ]]; then
+    backup_hosts_file
+    add_entries
+    echo "Entries added to /etc/hosts."
+elif [[ $1 == "off" ]]; then
+    backup_hosts_file
+    remove_entries
+    echo "Entries removed from /etc/hosts."
+else
+    echo "Usage: $0 {on|off}"
+    exit 1
+fi
