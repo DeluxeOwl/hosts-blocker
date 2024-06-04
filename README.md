@@ -2,6 +2,8 @@
 
 This is a simple bash script (~60 lines with the domains) designed to manage entries in your `/etc/hosts` file.
 
+It requires sudo **so it before running it**.
+
 Its main goal is to help you block and unblock access to certain websites by mapping them to `127.0.0.1`.
 
 I use it to block social media.
